@@ -34,8 +34,8 @@ ACCOUNT_ID=$(docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$A
 
 ECR_URL="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
 
-docker run --rm -ti -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecr get-login-password --region $REGION \
- | docker login --username AWS --password-stdin $ECR_URL
+PASSWORD=$(docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecr get-login-password --region $REGION)
+docker login --username AWS --password $PASSWORD $ECR_URL
  
 docker pull $IMAGE:$TAG
 
@@ -43,7 +43,9 @@ docker tag $IMAGE:$TAG $ECR_URL/$AWS_IMAGE:$TAG
 
 docker push $ECR_URL/$AWS_IMAGE:$TAG
 
-if [ -n "$SKIP_ECS" ]; then
+if [ -z "$SKIP_ECS" ]; then
+  echo ""
+  echo "Deploying to ECS"
   docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecs update-service --cluster $CLUSTER \
    --service $SERVICE --force-new-deployment --region $REGION
 fi
