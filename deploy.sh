@@ -4,12 +4,17 @@
 #
 # Example of usage:
 #
-# AWS_ACCESS_KEY_ID=key AWS_SECRET_ACCESS_KEY=secret_key AWS_REGION=us-east-2 \
-#  AWS_ACCOUNT_ID=account_id AWS_CLUSTER=oclqa SERVICE=ocl \
-#  IMAGE_REPO=openconceptlab IMAGE_NAME=oclapi2 TAG=qa ./deploy.sh
+# AWS_ACCESS_KEY_ID=key AWS_SECRET_ACCESS_KEY=secret_key REGION=us-east-2 CLUSTER=oclqa SERVICE=ocl \
+#  IMAGE=openconceptlab/oclapi2 AWS_IMAGE=oclapi2 TAG=qa ./deploy.sh
 #
 
 set -e
+
+if [ -z "$AWS_CLI_TAG" ]; then
+  AWS_CLI_TAG=2.1.1
+fi
+
+CREDENTIALS=""
 
 if [ -n "$AWS_ACCESS_KEY_ID" ]; then
   CREDENTIALS="$CREDENTIALS -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID"
@@ -17,18 +22,29 @@ fi
 if [ -n "$AWS_SECRET_ACCESS_KEY" ]; then
   CREDENTIALS="$CREDENTIALS -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
 fi
-if [ -n "$AWS_REGION" ]; then
-  CREDENTIALS="$CREDENTIALS -e AWS_DEFAULT_REGION=$AWS_REGION"
+if [ -n "$REGION" ]; then
+  CREDENTIALS="$CREDENTIALS -e AWS_DEFAULT_REGION=$REGION"
 fi
 
-AWS_ECR_URL="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+if [ -z "$AWS_IMAGE" ]; then
+  AWS_IMAGE=$IMAGE
+fi
 
-docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli ecr get-login-password --region $AWS_REGION \
- | docker login --username AWS --password-stdin $AWS_ECR_URL
+ACCOUNT_ID=$(docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG sts get-caller-identity --query Account --output text)
 
-docker tag $IMAGE_REPO/$IMAGE_NAME:$TAG $AWS_ECR_URL/$IMAGE_NAME:$TAG
+ECR_URL="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
 
-docker push $AWS_ECR_URL/$IMAGE_NAME:$TAG
+docker run --rm -ti -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecr get-login-password --region $REGION \
+ | docker login --username AWS --password-stdin $ECR_URL
+ 
+docker pull $IMAGE:$TAG
 
-docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli ecs update-service --cluster $CLUSTER \
- --service $SERVICE --force-new-deployment --region $AWS_REGION
+docker tag $IMAGE:$TAG $ECR_URL/$AWS_IMAGE:$TAG
+
+docker push $ECR_URL/$AWS_IMAGE:$TAG
+
+if [ -n "$SKIP_ECS" ]; then
+  docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecs update-service --cluster $CLUSTER \
+   --service $SERVICE --force-new-deployment --region $REGION
+fi
+ 
