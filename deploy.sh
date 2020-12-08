@@ -48,7 +48,7 @@ if [ -z "$SKIP_ECS" ]; then
   echo "Deploying to ECS"
   docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecs update-service --cluster $CLUSTER \
    --service $SERVICE --force-new-deployment --region $REGION
-  if [ "$SERVICE" -eq "ocl_api" ]; then
+  if [ "$SERVICE" == "ocl_api" ]; then
     echo "Deploying OCL API"
     docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecs update-service --cluster $CLUSTER \
      --service "ocl_celery" --force-new-deployment --region $REGION
