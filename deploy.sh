@@ -48,20 +48,20 @@ if [ -z "$SKIP_ECS" ]; then
   echo "Deploying to ECS"
   docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecs update-service --cluster $CLUSTER \
    --service $SERVICE --force-new-deployment --region $REGION
-  if [ "$SERVICE" == "ocl_api" ]; then
-    echo "Deploying OCL API"
+  if [ "$SERVICE" == "$TAG-api" ]; then
+    echo "Deploying OCL API and related services"
     docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecs update-service --cluster $CLUSTER \
-     --service "ocl_celery" --force-new-deployment --region $REGION
+     --service "$TAG-celery" --force-new-deployment --region $REGION
     docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecs update-service --cluster $CLUSTER \
-     --service "ocl_celery_concurrent" --force-new-deployment --region $REGION
+     --service "$TAG-celery-concurrent" --force-new-deployment --region $REGION
     docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecs update-service --cluster $CLUSTER \
-     --service "ocl_celery_bulk_import_root" --force-new-deployment --region $REGION
+     --service "$TAG-celery-bulk-import-root" --force-new-deployment --region $REGION
     docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecs update-service --cluster $CLUSTER \
-     --service "ocl_celery_bulk_import_0_1" --force-new-deployment --region $REGION
+     --service "$TAG-celery-bulk-import-0-1" --force-new-deployment --region $REGION
     docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecs update-service --cluster $CLUSTER \
-     --service "ocl_celery_bulk_import_2_3" --force-new-deployment --region $REGION
+     --service "$TAG-celery-bulk-import-2-3" --force-new-deployment --region $REGION
     docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecs update-service --cluster $CLUSTER \
-     --service "ocl_flower" --force-new-deployment --region $REGION
+     --service "$TAG-flower" --force-new-deployment --region $REGION
   fi
 fi
  
