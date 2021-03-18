@@ -61,6 +61,8 @@ if [ -z "$SKIP_ECS" ]; then
     docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecs update-service --cluster $CLUSTER \
      --service "$TAG-celery-bulk-import-2-3" --force-new-deployment --region $REGION
     docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecs update-service --cluster $CLUSTER \
+     --service "$TAG-celery-indexing" --force-new-deployment --region $REGION
+    docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecs update-service --cluster $CLUSTER \
      --service "$TAG-flower" --force-new-deployment --region $REGION
   fi
 fi
