@@ -51,8 +51,6 @@ if [ -z "$SKIP_ECS" ]; then
   if [ "$SERVICE" == "$TAG-api" ]; then
     echo "Deploying OCL API and related services"
     docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecs update-service --cluster $CLUSTER \
-     --service "$TAG-fhir" --force-new-deployment --region $REGION
-    docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecs update-service --cluster $CLUSTER \
      --service "$TAG-celery" --force-new-deployment --region $REGION
     docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS_CLI_TAG ecs update-service --cluster $CLUSTER \
      --service "$TAG-celery-concurrent" --force-new-deployment --region $REGION
