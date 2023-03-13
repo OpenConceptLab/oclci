@@ -30,14 +30,14 @@ PASSWORD=$(docker run --rm -v ~/.aws:/root/.aws $CREDENTIALS amazon/aws-cli:$AWS
 docker login --username AWS --password $PASSWORD $ECR_URL
 
 echo ""
-echo "1/7 Pushing postgres to ECR"
+echo "1/6 Pushing postgres to ECR"
 IMAGE=postgres 
 TAG=12.3-alpine
 docker pull $IMAGE:$TAG  
 docker tag $IMAGE:$TAG $ECR_URL/$IMAGE:$TAG
 docker push $ECR_URL/$IMAGE:$TAG
 echo ""
-echo "2/7 Pushing redis to ECR"
+echo "2/6 Pushing redis to ECR"
 IMAGE=redis 
 AWS_IMAGE=redis
 TAG=6.0.6-alpine
@@ -45,14 +45,14 @@ docker pull $IMAGE:$TAG
 docker tag $IMAGE:$TAG $ECR_URL/$IMAGE:$TAG
 docker push $ECR_URL/$IMAGE:$TAG
 echo ""
-echo "3/7 Pushing elasticsearch to ECR"
+echo "3/6 Pushing elasticsearch to ECR"
 IMAGE=elasticsearch 
 TAG=7.8.1
 docker pull $IMAGE:$TAG  
 docker tag $IMAGE:$TAG $ECR_URL/$IMAGE:$TAG
 docker push $ECR_URL/$IMAGE:$TAG
 echo ""
-echo "4/7 Pushing oclapi2 to ECR"
+echo "4/6 Pushing oclapi2 to ECR"
 IMAGE=openconceptlab/oclapi2 
 AWS_IMAGE=oclapi2
 docker pull $IMAGE:qa
@@ -65,20 +65,7 @@ docker push $ECR_URL/$AWS_IMAGE:staging
 docker tag $IMAGE:qa $ECR_URL/$AWS_IMAGE:production
 docker push $ECR_URL/$AWS_IMAGE:production
 echo ""
-echo "5/7 Pushing oclfhir to ECR"
-IMAGE=openconceptlab/oclfhir
-AWS_IMAGE=oclfhir
-docker pull $IMAGE:qa
-docker tag $IMAGE:qa $ECR_URL/$AWS_IMAGE:qa
-docker push $ECR_URL/$AWS_IMAGE:qa
-docker tag $IMAGE:qa $ECR_URL/$AWS_IMAGE:demo
-docker push $ECR_URL/$AWS_IMAGE:demo
-docker tag $IMAGE:qa $ECR_URL/$AWS_IMAGE:staging
-docker push $ECR_URL/$AWS_IMAGE:staging
-docker tag $IMAGE:qa $ECR_URL/$AWS_IMAGE:production
-docker push $ECR_URL/$AWS_IMAGE:production
-echo ""
-echo "6/7 Pushing oclweb2 to ECR"
+echo "5/6 Pushing oclweb2 to ECR"
 IMAGE=openconceptlab/oclweb2
 AWS_IMAGE=oclweb2 
 docker pull $IMAGE:qa
@@ -91,7 +78,7 @@ docker push $ECR_URL/$AWS_IMAGE:staging
 docker tag $IMAGE:qa $ECR_URL/$AWS_IMAGE:production
 docker push $ECR_URL/$AWS_IMAGE:production
 echo ""
-echo "7/7 Pushing oclmsp to ECR"
+echo "6/6 Pushing oclmsp to ECR"
 IMAGE=openconceptlab/oclmsp
 AWS_IMAGE=oclmsp
 docker pull $IMAGE:qa2
