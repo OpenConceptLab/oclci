@@ -4,8 +4,8 @@
 #
 # Example of usage:
 #
-# AWS_ACCESS_KEY_ID=key AWS_SECRET_ACCESS_KEY=secret_key REGION=us-east-2 CLUSTER=oclqa SERVICE=ocl \
-#  IMAGE=openconceptlab/oclapi2 AWS_IMAGE=oclapi2 TAG=qa ./deploy.sh
+# SKIP_ECS=True AWS_ACCESS_KEY_ID=key AWS_SECRET_ACCESS_KEY=secret_key REGION=us-east-2 \
+#  IMAGE=errbit/errbit AWS_IMAGE=errbit TAG=v0.9.0 ./deploy.sh
 #
 
 set -e
